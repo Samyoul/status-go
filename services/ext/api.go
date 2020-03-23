@@ -202,8 +202,8 @@ func (api *PublicAPI) Leave(chat protocol.Chat) error {
 	return api.service.messenger.Leave(chat)
 }
 
-func (api *PublicAPI) LeaveGroupChat(ctx Context, chatID string) (*protocol.MessengerResponse, error) {
-	return api.service.messenger.LeaveGroupChat(ctx, chatID)
+func (api *PublicAPI) LeaveGroupChat(ctx Context, chatID string, remove bool) (*protocol.MessengerResponse, error) {
+	return api.service.messenger.LeaveGroupChat(ctx, chatID, remove)
 }
 
 func (api *PublicAPI) CreateGroupChatWithMembers(ctx Context, name string, members []string) (*protocol.MessengerResponse, error) {
@@ -224,6 +224,10 @@ func (api *PublicAPI) AddAdminsToGroupChat(ctx Context, chatID string, members [
 
 func (api *PublicAPI) ConfirmJoiningGroup(ctx context.Context, chatID string) (*protocol.MessengerResponse, error) {
 	return api.service.messenger.ConfirmJoiningGroup(ctx, chatID)
+}
+
+func (api *PublicAPI) ChangeGroupChatName(ctx Context, chatID string, name string) (*protocol.MessengerResponse, error) {
+	return api.service.messenger.ChangeGroupChatName(ctx, chatID, name)
 }
 
 func (api *PublicAPI) LoadFilters(parent context.Context, chats []*transport.Filter) ([]*transport.Filter, error) {
