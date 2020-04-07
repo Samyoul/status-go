@@ -68,7 +68,14 @@ func NewLevelDB(dataDir string) (*LevelDB, error) {
 		log.Info("database is corrupted trying to recover", "path", dataDir)
 		db, err = leveldb.RecoverFile(dataDir, nil)
 	}
-	return &LevelDB{ldb: db}, err
+	instance := LevelDB{ldb: db}
+
+	count, err := instance.envelopesCount()
+	if err == nil {
+		archivedEnvelopesCounter.Add(float64(count))
+	}
+
+	return &instance, err
 }
 
 // Build iterator returns an iterator given a start/end and a cursor
@@ -138,6 +145,21 @@ func (db *LevelDB) Prune(t time.Time, batchSize int) (int, error) {
 	}
 
 	return removed, nil
+}
+
+func (db *LevelDB) envelopesCount() (int, error) {
+	defer recoverLevelDBPanics("envelopesCount")
+	iterator, err := db.BuildIterator(CursorQuery{})
+	if err != nil {
+		return 0, err
+	}
+
+	var count int
+	for iterator.Next() {
+		count++
+	}
+
+	return count, nil
 }
 
 // SaveEnvelope stores an envelope in leveldb and increments the metrics

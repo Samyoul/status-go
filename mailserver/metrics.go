@@ -49,7 +49,7 @@ var (
 	})
 	archivedEnvelopesCounter = prom.NewCounter(prom.CounterOpts{
 		Name: "mailserver_archived_envelopes_total",
-		Help: "Number of envelopes saved.",
+		Help: "Number of envelopes saved in the DB.",
 	})
 	archivedEnvelopeSizeMeter = prom.NewHistogram(prom.HistogramOpts{
 		Name:    "mailserver_archived_envelope_size_bytes",

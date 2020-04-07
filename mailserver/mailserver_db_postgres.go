@@ -38,6 +38,12 @@ func NewPostgresDB(uri string) (*PostgresDB, error) {
 		return nil, err
 	}
 
+	// Initialize the archive counter
+	count, err := instance.envelopesCount()
+	if err == nil {
+		archivedEnvelopesCounter.Add(float64(count))
+	}
+
 	return instance, nil
 }
 
@@ -188,6 +194,23 @@ func (i *PostgresDB) Prune(t time.Time, batch int) (int, error) {
 		return 0, err
 	}
 	return int(rows), nil
+}
+
+func (i *PostgresDB) envelopesCount() (int, error) {
+	statement := "SELECT count(1) FROM envelopes"
+	stmt, err := i.db.Prepare(statement)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var count int
+
+	if err = stmt.QueryRow(stmt).Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func (i *PostgresDB) SaveEnvelope(env types.Envelope) error {
